@@ -2,6 +2,8 @@
 
 import express from "express"
 import expressWs from "express-ws";
+import https from "https";
+import fs from "fs";
 const PORT = process.env.PORT || 5000
 
 /** @type { { [x: string]: { [name: string]: WebSocket} } } */
@@ -21,7 +23,23 @@ function countSession(sid) {
 
 const app = express();
 
-expressWs(app);
+console.log("process.env.LOCAL", process.env.LOCAL);
+
+let server;
+if (process.env.LOCAL) {
+	const privateKey = fs.readFileSync('ssl/server.key', 'utf8');
+	const certificate = fs.readFileSync('ssl/server.cert', 'utf8');
+
+	const credentials = { key: privateKey, cert: certificate };
+
+	server = https.createServer(credentials, app);
+} else {
+	server = https.createServer(app);
+}
+
+console.log(server);
+
+expressWs(app, server);
 
 app.use(express.static("public"))
 
@@ -63,4 +81,7 @@ app.ws("/session/:sid/:user", function (ws, req) {
 	})
 });
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`))
+// app.listen(PORT, () => console.log(`Listening on ${PORT}`))
+
+server.listen(PORT, () => console.log(`Listening on ${PORT}`));
+

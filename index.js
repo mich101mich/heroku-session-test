@@ -42,6 +42,14 @@ wss.on("connection", function (ws) {
 	let color;
 	/** @type {{ [name: string]: ws}} */
 	let session;
+	const intervalID = setInterval(() => {
+		try {
+			ws.ping();
+		} catch (e) {
+			console.error(e);
+			clearInterval(intervalID);
+		}
+	}, 20000);
 
 	ws.on("message", data => {
 		const message = data.toString();
@@ -71,6 +79,7 @@ wss.on("connection", function (ws) {
 	});
 
 	ws.on("close", function () {
+		clearInterval(intervalID);
 		if (sid) {
 			delete session[user];
 			const count = countSession(sid);

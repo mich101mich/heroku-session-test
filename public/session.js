@@ -4,6 +4,7 @@ const text = document.getElementById("text");
 if (!(text instanceof HTMLInputElement) || text.type != "text") {
 	throw new Error("Missing text Element");
 }
+text.focus();
 
 const form = document.getElementById("form");
 if (!(form instanceof HTMLFormElement)) {
@@ -37,6 +38,7 @@ socket.onclose = function (event) {
 
 form.addEventListener("submit", e => {
 	socket.send(text.value);
+	text.value = "";
 
 	e.preventDefault();
 	return false;

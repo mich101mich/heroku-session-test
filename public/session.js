@@ -15,7 +15,7 @@ if (!(messages instanceof HTMLDivElement)) {
 	throw new Error("Missing messages Element");
 }
 
-const socket = new WebSocket(`wss://${location.host}${location.pathname}`);
+const socket = new WebSocket(location.origin.replace(/^http/, 'ws'));
 
 socket.onmessage = function (e) {
 	messages.innerText += e.data + "\n";

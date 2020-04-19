@@ -27,7 +27,6 @@ socket.onmessage = function (e) {
 }
 
 socket.onclose = function (event) {
-	console.log("event", event);
 	if (event.reason) {
 		alert(event.reason);
 	} else {

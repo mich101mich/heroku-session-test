@@ -11,18 +11,28 @@ if (!(form instanceof HTMLFormElement)) {
 }
 
 const messages = document.getElementById("messages");
-if (!(messages instanceof HTMLDivElement)) {
+if (!(messages instanceof HTMLTableElement)) {
 	throw new Error("Missing messages Element");
 }
 
 const socket = new WebSocket(location.origin.replace(/^http/, 'ws'));
-
-socket.onmessage = function (e) {
-	messages.innerText += e.data + "\n";
+socket.onopen = function () {
+	socket.send(location.pathname.substr(1));
 }
 
-socket.onclose = function () {
-	alert("Session was closed");
+socket.onmessage = function (e) {
+	const tr = document.createElement("tr");
+	tr.innerHTML = e.data;
+	messages.appendChild(tr);
+}
+
+socket.onclose = function (event) {
+	console.log("event", event);
+	if (event.reason) {
+		alert(event.reason);
+	} else {
+		alert("Session was closed");
+	}
 	location.pathname = "";
 }
 
